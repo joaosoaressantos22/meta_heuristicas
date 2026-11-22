@@ -1,0 +1,16 @@
+\section{Função objetivo}
+
+O custo de uma rota $R=(v_1,\ldots,v_m)$ é
+\begin{equation}
+C(R)=d_{0v_1}+\sum_{i=1}^{m-1}d_{v_iv_{i+1}}+d_{v_m0},
+\end{equation}
+onde $0$ é o depósito. Para uma solução $S=(R_1,\ldots,R_k)$, o custo total é
+\begin{equation}
+F(S)=\sum_{j=1}^{k}\left(d_{0v_{j1}}+\sum_{i=1}^{m_j-1}d_{v_{ji}v_{j,i+1}}+d_{v_{jm_j}0}\right).
+\end{equation}
+O gap em relação ao ótimo conhecido $F^*$ é
+\begin{equation}
+\text{gap}(S)=100\left(\frac{F(S)}{F^*}-1\right).
+\end{equation}
+
+A validação é independente do custo: uma solução pode ter custo baixo e ainda assim ser inválida caso omita cliente, o repita ou exceda a capacidade. A matriz de distâncias permite recalcular rapidamente os custos das inserções e movimentos.

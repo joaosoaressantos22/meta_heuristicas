@@ -1,0 +1,29 @@
+\section{Calibração dos hiperparâmetros}
+
+A calibração comparou $\alpha\in\{0.25,0.50,0.75\}$ nas instâncias \texttt{A-n32-k5}, \texttt{A-n80-k10} e \texttt{B-n78-k10}. Para cada combinação instância--$\alpha$, foram realizadas cinco execuções independentes, com sementes reproduzíveis. O limite foi de 50 iterações, 20 movimentos máximos de busca local e 180 segundos por execução.
+
+A escolha considerou a média dos gaps obtidos nas três instâncias. Em caso de empate, seria utilizado o custo médio agregado.
+
+\begin{table}[htbp]
+\centering
+\caption{Resumo da calibração manual do parâmetro $\alpha$.}
+\label{tab:calibracao}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Instância & Ótimo & $\alpha$ & Custo mín. & Custo méd. & Gap mín. & Gap méd. \\
+\midrule
+A-n32-k5 & 784 & 0.25 & 808 & 826.4 & 3.06\% & 5.41\% \\
+A-n32-k5 & 784 & 0.50 & 816 & 832.0 & 4.08\% & 6.12\% \\
+A-n32-k5 & 784 & 0.75 & 819 & 838.4 & 4.46\% & 6.94\% \\
+A-n80-k10 & 1763 & 0.25 & 2180 & 2195.8 & 23.65\% & 24.55\% \\
+A-n80-k10 & 1763 & 0.50 & 2142 & 2195.4 & 21.50\% & 24.53\% \\
+A-n80-k10 & 1763 & 0.75 & 2176 & 2213.0 & 23.43\% & 25.52\% \\
+B-n78-k10 & 1221 & 0.25 & 1668 & 1687.4 & 36.61\% & 38.20\% \\
+B-n78-k10 & 1221 & 0.50 & 1685 & 1697.4 & 38.00\% & 39.02\% \\
+B-n78-k10 & 1221 & 0.75 & 1644 & 1678.6 & 34.64\% & 37.48\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Os gaps médios agregados por $\alpha$ foram aproximadamente 22.72\% para 0.25, 23.22\% para 0.50 e 23.31\% para 0.75. Assim, $\alpha=0.25$ foi selecionado para o GRASP clássico nos experimentos finais.

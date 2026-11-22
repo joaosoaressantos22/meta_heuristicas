@@ -1,0 +1,14 @@
+\section{Instâncias}
+
+As instâncias pertencem aos conjuntos A e B da biblioteca Augerat. Seu nome indica dimensão e frota, como em \texttt{A-n32-k5}. Cada arquivo contém coordenadas bidimensionais, demandas, depósito, capacidade e o valor ótimo conhecido no comentário \cite{augerat1995}. O depósito é determinado pela seção \texttt{DEPOT\_SECTION}.
+
+A leitura extrai metadados e seções separadamente. A matriz de distâncias é calculada uma vez e utilizada nas construções, validações e movimentos da busca local.
+
+Os arquivos são lidos por seções. Extraem-se nome, coordenadas, demandas, depósito, capacidade e número de veículos. O depósito é identificado em \texttt{DEPOT\_SECTION}; os demais nós são clientes. O nome do arquivo informa o número máximo de veículos. Quando presente no comentário, o valor ótimo conhecido é registrado para o cálculo do gap.
+
+As distâncias seguem \texttt{EUC\_2D}, com arredondamento ao inteiro mais próximo:
+\begin{equation}
+d_{ij}=\left\lfloor\sqrt{(x_i-x_j)^2+(y_i-y_j)^2}+0.5\right\rfloor.
+\end{equation}
+
+A carga de cada rota e a identidade dos clientes são validadas antes que uma solução seja armazenada. Uma solução é viável quando atende todos os clientes uma única vez, não excede o número de veículos e respeita a capacidade de cada rota. Uma rota é representada por $0 \rightarrow v_1 \rightarrow \cdots \rightarrow v_m \rightarrow 0$, sendo $0$ o depósito.

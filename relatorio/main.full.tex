@@ -1,0 +1,232 @@
+% Compiled article source prepared for the SBC template
+
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{microtype}
+
+\setlength{\textfloatsep}{5pt plus 1pt minus 2pt}
+\setlength{\floatsep}{5pt plus 1pt minus 2pt}
+\setlength{\intextsep}{5pt plus 1pt minus 2pt}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\belowcaptionskip}{2pt}
+\setlist{nosep}
+
+\sloppy
+
+\title{Uma solução para o Problema de Roteamento de Veículos Capacitado utilizando GRASP e GRASP Reativo}
+
+\author{João Vitor Soares dos Santos\inst{1}, Pedro Henrique de Castro Cunha Quedevez\inst{1}}
+
+\address{Curso de Ciência da Computação -- Universidade Federal do Espírito Santo (UFES)\\
+Vitória -- ES -- Brasil}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This article presents an experimental study of the Capacitated Vehicle Routing Problem (CVRP) using the Greedy Randomized Adaptive Search Procedure (GRASP) and its reactive variant. The solution combines randomized greedy construction, Restricted Candidate Lists (RCL), and best-improvement local search. Instances A and B from the CVRPLIB/Augerat benchmark set were solved five times for both methods. Parameter calibration selected $\alpha=0.25$ from $0.25$, $0.50$, and $0.75$. Across 50 instance-method experiments, Reactive GRASP obtained an average gap of $17.24\%$, against $17.63\%$ for classical GRASP. The reactive approach was also slower on average. These results indicate that Reactive GRASP can improve average quality, but does not consistently dominate the calibrated classical method, especially for small instances.
+\end{abstract}
+
+\begin{resumo}
+Este artigo apresenta um estudo experimental do Problema de Roteamento de Veículos Capacitado (CVRP) com o Greedy Randomized Adaptive Search Procedure (GRASP) e sua versão reativa. A solução combina construção gulosa aleatorizada, Lista Restrita de Candidatos (RCL) e busca local do tipo melhor melhora. Foram resolvidas cinco vezes todas as instâncias dos conjuntos A e B da biblioteca Augerat. Na calibração, $\alpha=0.25$ apresentou o menor gap médio dentre $0.25$, $0.50$ e $0.75$. Considerando as 50 combinações instância--método, o GRASP Reativo obteve gap médio de $17.24\%$, contra $17.63\%$ do GRASP clássico. O método reativo apresentou maior tempo médio. Os resultados mostram melhoria média no reativo, mas não dominância consistente sobre o GRASP clássico calibrado.
+\end{resumo}
+
+\section{Introdução}
+
+O Problema de Roteamento de Veículos (Vehicle Routing Problem -- VRP) surgiu no contexto da programação de entregas e da organização de frotas \,\cite{dantzig1959}. No Problema de Roteamento de Veículos Capacitado (Capacitated Vehicle Routing Problem -- CVRP), existe um depósito, um conjunto de clientes com demandas conhecidas e uma frota de veículos com capacidade limitada. Cada cliente deve ser atendido exatamente uma vez, todas as rotas começam e terminam no depósito, e a carga de cada veículo não pode exceder sua capacidade. O objetivo é minimizar a distância total percorrida.
+
+O CVRP é um problema de otimização combinatória de difícil resolução, pois o número de sequências viáveis cresce rapidamente com a quantidade de clientes. Meta-heurísticas são utilizadas para obter soluções de boa qualidade em tempo limitado. O GRASP foi proposto para problemas difíceis e combina construção gulosa aleatorizada com busca local \,\cite{feo1989,resende2019}.
+
+O estudo compara o GRASP clássico, com $\alpha$ fixo, ao GRASP Reativo, que adapta a distribuição de probabilidades dos valores de $\alpha$. São analisadas instâncias dos conjuntos A e B da biblioteca Augerat, incluindo custo, tempo, gap, convergência e Time-To-Target (TTT).
+
+\section{Instâncias}
+
+As instâncias pertencem aos conjuntos A e B da biblioteca Augerat. Seu nome indica dimensão e frota, como em \texttt{A-n32-k5}. Cada arquivo contém coordenadas bidimensionais, demandas, depósito, capacidade e o valor ótimo conhecido no comentário \,\cite{augerat1995}. O nó de identificação diferente de $1$ varia conforme o conjunto, mas é determinado pela seção \texttt{DEPOT\_SECTION}.
+
+A leitura extrai metadados e seções separadamente. A matriz de distâncias é calculada uma vez e utilizada nas construções, validações e movimentos da busca local.
+
+Os arquivos são lidos por seções. Extraem-se nome, coordenadas, demandas, depósito, capacidade e número de veículos. O depósito é identificado em \texttt{DEPOT\_SECTION}; os demais nós são clientes. Cada nó de cada instância possui uma demanda, e o nome do arquivo informa o número máximo de veículos. Quando presente no comentário, o valor ótimo conhecido é registrado para o cálculo do gap.
+
+As distâncias seguem \texttt{EUC\_2D}, com arredondamento ao inteiro mais próximo:
+\begin{equation}
+d_{ij}=\left\lfloor\sqrt{(x_i-x_j)^2+(y_i-y_j)^2}+0.5\right\rfloor.
+\end{equation}
+
+A carga de cada rota e a identidade dos clientes são validadas antes que uma solução seja armazenada. Uma solução é viável quando atende todos os clientes uma única vez, não excede o número de veículos e respeita a capacidade de cada rota. Uma rota é representada por $0 \rightarrow v_1 \rightarrow \cdots \rightarrow v_m \rightarrow 0$, sendo $0$ o depósito. Por exemplo, na instância \texttt{A-n32-k5}, com capacidade 100, uma rota possível seria $1 \rightarrow 4 \rightarrow 9 \rightarrow 12 \rightarrow 1$, desde que a soma das demandas dos clientes atendidos não ultrapasse 100. As verificações são independentes do custo e evitam que soluções com excesso de carga ou atendimento repetido sejam consideradas válidas.
+
+\section{Função objetivo}
+
+O custo de uma rota $R=(v_1,\ldots,v_m)$ é
+\begin{equation}
+C(R)=d_{0v_1}+\sum_{i=1}^{m-1}d_{v_iv_{i+1}}+d_{v_m0},
+\end{equation}
+onde $0$ é o depósito. Para uma solução $S=(R_1,\ldots,R_k)$, o custo total é
+\begin{equation}
+F(S)=\sum_{j=1}^{k}\left(d_{0v_{j1}}+\sum_{i=1}^{m_j-1}d_{v_{ji}v_{j,i+1}}+d_{v_{jm_j}0}\right).
+\end{equation}
+O gap em relação ao ótimo conhecido $F^*$ é
+\begin{equation}
+\text{gap}(S)=100\left(\frac{F(S)}{F^*}-1\right).
+\end{equation}
+
+\section{Descrição geral dos algoritmos}
+
+O GRASP segue um ciclo multi-start ilustrado pela Figura~\ref{fig:pseudogeral}. Em cada iteração, constrói-se uma solução viável, executa-se a busca local e atualiza-se a melhor solução global.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{pseudo-codigo-geral.png}
+\caption{Pseudocódigo geral do GRASP adaptado à implementação.}
+\label{fig:pseudogeral}
+\end{figure}
+
+A construção produz diversidade e a busca local intensifica a solução. No GRASP clássico, $\alpha$ é constante. No reativo, blocos de iterações acumulam médias de custo por $\alpha$ e atualizam suas probabilidades. A implementação usa
+\begin{equation}
+w(\alpha)=-\delta\log\left(\max\left(\frac{\bar F(\alpha)}{F^\star_{exec}},1\right)\right),
+\end{equation}
+com $\delta=5$, seguida de normalização softmax. Assim, alfas associados a melhores custos recebem maiores probabilidades, sem usar o ótimo conhecido.
+
+Os candidatos não são associados a um histórico global do problema. Em vez disso, o método atualiza as médias dos custos observados em cada bloco e transforma essa informação em probabilidades. A adaptação favorece $\alpha$ com bom desempenho recente, mas mantém chance de explorar diferentes níveis de aleatoriedade.
+
+\section{Algoritmo construtivo}
+
+A construção prioriza clientes com maiores demandas. Para o cliente escolhido, avaliam-se as posições viáveis nas rotas. O custo incremental de uma inserção é $\Delta=C(R^{p,v})-C(R)$. Os candidatos formam a RCL definida por
+\begin{equation}
+\Delta \leq c_{min}+\alpha(c_{max}-c_{min}),
+\end{equation}
+e uma posição é sorteada nessa lista. Assim, $\alpha=0$ admite apenas o melhor incremento, $\alpha=1$ aceita todos os candidatos viáveis e valores intermediários equilibram guloseima e aleatoriedade. Os custos são recalculados após cada inserção. Quando não há candidato viável, uma busca limitada por backtracking distribui os clientes restantes.
+
+\section{Busca local}
+
+A busca local usa a estratégia \textit{best-improvement}. O processo avalia 2-opt, relocalização e troca entre rotas. Movimentos que excedem a capacidade são descartados. A variante \textit{first-improvement}, apesar de implementada, não participa dos experimentos.
+
+Em cada iteração, avalia todas as vizinhanças, aplica o movimento com maior redução $\Delta C<0$ e repete o processo até não existir melhora ou atingir 20 movimentos nos experimentos.
+
+\section{Calibração dos hiperparâmetros}
+
+A calibração comparou $\alpha\in\{0.25,0.50,0.75\}$ nas instâncias \texttt{A-n32-k5}, \texttt{A-n80-k10} e \texttt{B-n78-k10}. Para cada combinação instância--$\alpha$, foram realizadas cinco execuções independentes, com sementes reproduzíveis. O limite da calibração foi de 50 iterações, 20 movimentos máximos de busca local e 180 segundos por execução.
+
+A escolha considerou a média dos gaps obtidos nas três instâncias. Em caso de empate, seria utilizado o custo médio agregado. A Tabela~\ref{tab:calibracao} resume os resultados de calibração já registrados no notebook.
+
+\begin{table}[!htbp]
+\centering
+\caption{Resumo da calibração manual do parâmetro $\alpha$.}
+\label{tab:calibracao}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Instância & Ótimo & $\alpha$ & Custo mín. & Custo méd. & Gap mín. & Gap méd. \\
+\midrule
+A-n32-k5 & 784 & 0.25 & 808 & 826.4 & 3.06\% & 5.41\% \\
+A-n32-k5 & 784 & 0.50 & 816 & 832.0 & 4.08\% & 6.12\% \\
+A-n32-k5 & 784 & 0.75 & 819 & 838.4 & 4.46\% & 6.94\% \\
+A-n80-k10 & 1763 & 0.25 & 2180 & 2195.8 & 23.65\% & 24.55\% \\
+A-n80-k10 & 1763 & 0.50 & 2142 & 2195.4 & 21.50\% & 24.53\% \\
+A-n80-k10 & 1763 & 0.75 & 2176 & 2213.0 & 23.43\% & 25.52\% \\
+B-n78-k10 & 1221 & 0.25 & 1668 & 1687.4 & 36.61\% & 38.20\% \\
+B-n78-k10 & 1221 & 0.50 & 1685 & 1697.4 & 38.00\% & 39.02\% \\
+B-n78-k10 & 1221 & 0.75 & 1644 & 1678.6 & 34.64\% & 37.48\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Os gaps médios agregados por $\alpha$ foram aproximadamente 22.72\% para 0.25, 23.22\% para 0.50 e 23.31\% para 0.75. O menor deles ocorreu para $\alpha=0.25$, que foi selecionado para o GRASP clássico nos experimentos finais. Embora o melhor valor mínimo individual tenha ocorrido em combinações distintas, o critério explicitamente adotado foi a média de gap entre as três instâncias.
+
+A calibração seleciona um único $\alpha$ antes dos experimentos finais usando instâncias representativas. O GRASP Reativo não depende desse parâmetro fixo: ele mantém uma distribuição sobre uma grade de valores e altera essa distribuição conforme os custos observados. Portanto, a calibração avalia desempenho de candidatos offline, enquanto o reativo realiza aprendizagem durante a própria execução.
+
+\section{Experimentos e resultados}
+
+Os experimentos finais utilizaram todos os arquivos dos conjuntos A e B disponíveis no diretório \texttt{instancias}. O GRASP clássico foi configurado com $\alpha=0.25$, 50 iterações, 20 movimentos locais e o valor calibrado. O GRASP Reativo utilizou os valores de $\alpha$ entre 0 e 1 com passo 0.05, bloco de atualização igual a 2, $\delta=5$, 50 iterações e 20 movimentos locais.
+
+Os dois métodos foram executados cinco vezes em cada instância. Foram registrados custo mínimo e médio, tempo e gaps. O resumo agregado apresentou gap mínimo médio de 14.79\% no clássico e 14.29\% no reativo; os gaps médios foram 17.63\% e 17.24\%. O tempo médio foi 4.23 s no clássico e 6.05 s no reativo.
+
+A Tabela~\ref{tab:destaques} mostra os resultados para duas instâncias empregadas nas análises de convergência e TTT.
+
+\begin{table}[H]
+\centering
+\caption{Resultados finais das instâncias utilizadas na análise de convergência e TTT.}
+\label{tab:destaques}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+Instância & Método & Ótimo & Mínimo & Médio & Gap mín. & Gap méd. \\
+\midrule
+A-n33-k5 & GRASP $\alpha=0.25$ & 661 & 670 & 687.2 & 1.36\% & 3.96\% \\
+A-n33-k5 & Reactive GRASP & 661 & 669 & 677.6 & 1.21\% & 2.51\% \\
+B-n31-k5 & GRASP $\alpha=0.25$ & 672 & 675 & 680.8 & 0.45\% & 1.31\% \\
+B-n31-k5 & Reactive GRASP & 672 & 677 & 679.0 & 0.74\% & 1.04\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Em A-n33-k5, o reativo obteve melhor custo mínimo e melhor custo médio. Em B-n31-k5, o clássico obteve melhor custo mínimo, mas o reativo obteve melhor custo médio. Esses exemplos mostram que não existe uma vantagem absoluta observada em todas as métricas ou instâncias.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{comparacao_final_grasp.png}
+\caption{Comparação dos custos mínimos, do GRASP clássico calibrado e do GRASP Reativo, com a linha do ótimo conhecido.}
+\label{fig:comparacao}
+\end{figure}
+
+A Figura~\ref{fig:comparacao} permite comparar custo mínimo, métodos e ótimo por instância. Em A-n33-k5, o reativo obteve melhor mínimo e média; em B-n31-k5, o clássico obteve melhor mínimo e o reativo melhor média.
+
+Os gráficos de convergência mostram o melhor custo após cada solução construída e melhorada. O TTT considera o tempo até o primeiro registro cujo custo é igual ao ótimo conhecido.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{convergencia_A-n33-k5.png}
+\caption{Convergência em A-n33-k5.}
+\label{fig:convergenciaA}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{convergencia_B-n31-k5.png}
+\caption{Convergência em B-n31-k5.}
+\label{fig:convergenciaB}
+\end{figure}
+
+Nas duas instâncias, o custo decresce rapidamente nas primeiras avaliações e alcança uma faixa próxima ao ótimo antes da estabilização. Em A-n33-k5, a melhor execução do reativo atinge o ótimo em uma das 50 repetições, enquanto o clássico alcança o mesmo valor em duas. Em B-n31-k5, o clássico atinge o ótimo uma vez e o reativo nenhuma vez.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{ttt_A-n33-k5.png}
+\caption{TTT em A-n33-k5.}
+\label{fig:tttA}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{ttt_B-n31-k5.png}
+\caption{TTT em B-n31-k5.}
+\label{fig:tttB}
+\end{figure}
+
+Para o Time-To-Target (TTT), o alvo foi o ótimo conhecido da instância. Em A-n33-k5, o GRASP clássico atingiu o alvo em 2 de 50 execuções e o reativo em 1 de 50. O tempo médio entre as execuções que alcançaram o alvo foi cerca de 0.695 s no clássico e 0.280 s no reativo. Em B-n31-k5, apenas o GRASP clássico encontrou o alvo, em 1 de 50 execuções, após cerca de 0.297 s.
+
+É importante interpretar a taxa de sucesso junto do tempo total. O reativo encontrou o alvo mais rapidamente em uma das repetições de A-n33-k5, mas teve menor taxa de sucesso nessa instância. Em B-n31-k5, o reativo não atingiu o ótimo em nenhuma execução. Portanto, os resultados não comprovam superioridade global do método reativo.
+
+\section{Conclusão}
+
+O trabalho implementou e comparou o GRASP clássico e o reativo para o CVRP. A calibração selecionou $\alpha=0.25$. Nos experimentos finais, o reativo obteve gaps agregados ligeiramente menores, mas executou cerca de 43\% mais lentamente. Os gráficos de convergência e TTT não mostraram dominância: o clássico obteve mais sucessos em alcançar o ótimo em A-n33-k5 e B-n31-k5.
+
+Como trabalhos futuros, recomenda-se ampliar o número de repetições e instâncias de calibração e testar vizinhanças maiores ou path-relinking.
+
+Como cada instância foi executada cinco vezes, o mínimo representa o melhor resultado observado e a média representa a robustez do método. Uma diferença pequena entre os métodos pode não indicar superioridade estatística definida, pois o experimento não utiliza testes inferenciais.
+
+\renewcommand{\refname}{Referências}
+\bibliographystyle{sbc}
+\bibliography{references}
+
+\end{document}

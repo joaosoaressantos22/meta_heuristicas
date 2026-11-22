@@ -1,0 +1,26 @@
+\begin{thebibliography}{}
+
+\bibitem[Aiex et~al. 2007]{aiex2007}
+Aiex, R.~M., Resende, M. G.~C., and Ribeiro, C.~C. (2007).
+\newblock Ttt plots: A perl program to create time-to-target plots.
+\newblock {\em Optimization Letters}, 1:355--366.
+
+\bibitem[Dantzig and Ramser 1959]{dantzig1959}
+Dantzig, G.~B. and Ramser, J.~H. (1959).
+\newblock The truck dispatching problem.
+\newblock {\em Management Science}, 6(1):80--91.
+
+\bibitem[Feo and Resende 1989]{feo1989}
+Feo, T.~A. and Resende, M. G.~C. (1989).
+\newblock A probabilistic heuristic for a computationally difficult set
+  covering problem.
+\newblock {\em Operations Research Letters}, 8:67--71.
+
+\bibitem[Resende and Ribeiro 2019]{resende2019}
+Resende, M. G.~C. and Ribeiro, C.~C. (2019).
+\newblock Greedy randomized adaptive search procedures: Advances and
+  extensions.
+\newblock In {\em Handbook of Metaheuristics}, pages 169--220. Springer, 3
+  edition.
+
+\end{thebibliography}
