@@ -1,21 +1,18 @@
-\section{Descrição geral dos algoritmos}
+\section{Operadores e estratégias de exploração}
 
-O GRASP segue um ciclo multi-start ilustrado pela Figura~\ref{fig:pseudogeral}. Em cada iteração, constrói-se uma solução viável, executa-se a busca local e atualiza-se a melhor solução global.
+\textbf{Construção gulosa aleatorizada.} Os clientes são ordenados por demanda decrescente. A cada passo, um cliente é sorteado entre os (até) três de maior demanda restantes. Para ele, avalia-se em cada veículo com capacidade disponível a posição de inserção de menor custo incremental, $\Delta=C(R^{p,v})-C(R)$. Esses candidatos formam a RCL, definida por
+\begin{equation}
+\Delta \leq c_{min}+\alpha(c_{max}-c_{min}),
+\end{equation}
+e um deles é sorteado uniformemente. Assim, $\alpha=0$ é puramente guloso, $\alpha=1$ é puramente aleatório e valores intermediários equilibram os dois (Figura~\ref{fig:pseudoconstrucao}). Os custos são recalculados após cada inserção.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.72\textwidth]{imagens/pseudo-codigo-geral.png}
-\caption{Pseudocódigo geral do GRASP adaptado à implementação.}
-\label{fig:pseudogeral}
+\includegraphics[width=0.45\textwidth]{imagens/pseudo-codigo-construcao.png}
+\caption{Pseudocódigo da construção gulosa aleatorizada.}
+\label{fig:pseudoconstrucao}
 \end{figure}
 
-A construção produz diversidade e a busca local intensifica a solução. No GRASP clássico, $\alpha$ permanece constante. No GRASP Reativo, as probabilidades de escolha dos valores de $\alpha$ são atualizadas ao fim de cada bloco, com base nos custos observados. A probabilidade de escolher um valor $\alpha$ é calculada por
-\begin{equation}
-p(\alpha)=
-\frac{\left(F_{\mathrm{melhor}}/\bar F(\alpha)\right)^\delta}
-{\displaystyle\sum_{\beta\in\mathcal{A}}
-\left(F_{\mathrm{melhor}}/\bar F(\beta)\right)^\delta},
-\end{equation}
-em que $\bar F(\alpha)$ é o custo médio das soluções obtidas com $\alpha$, $F_{\mathrm{melhor}}$ é o menor custo encontrado até então e $\mathcal{A}$ é o conjunto de valores de $\alpha$. A normalização faz com que as probabilidades somem 1. O parâmetro $\delta=5$ controla a preferência por valores de $\alpha$ com melhor desempenho: quanto maior $\delta$, maior essa preferência. O ótimo conhecido da instância não é usado nesse cálculo.
+\textbf{Reparação.} Se um cliente não cabe em nenhuma rota, a construção é abandonada e os clientes são redistribuídos por uma busca com retrocesso (backtracking) limitada a 250 mil nós, que prioriza os clientes de maior demanda e usa os veículos mais carregados primeiro; em seguida, cada rota é ordenada por inserção de menor custo.
 
-A calibração seleciona um único $\alpha$ antes dos experimentos finais usando instâncias representativas. O GRASP Reativo, por sua vez, atualiza as probabilidades de uma grade de valores durante a execução.
+\textbf{Busca local.} A vizinhança é a união de três movimentos, todos descartados quando violam a capacidade: (i) \emph{2-opt} dentro de uma rota, que inverte um trecho; (ii) \emph{realocação}, que move um cliente para outra posição da mesma rota ou para outra rota; (iii) \emph{troca} de dois clientes de rotas diferentes. A estratégia é \textit{best-improvement}: em cada passo avaliam-se todos os vizinhos, aplica-se o de maior redução de custo ($\Delta C<0$) e repete-se até não haver melhora ou atingir o limite de movimentos (40 nos experimentos finais). A variante \textit{first-improvement} está implementada, mas não foi usada nos experimentos.

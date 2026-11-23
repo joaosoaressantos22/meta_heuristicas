@@ -1,14 +1,13 @@
-\section{Calibração dos hiperparâmetros}
+\section{Experimentos e resultados computacionais}
+\label{sec:experimentos}
 
-A calibração comparou $\alpha\in\{0.25,0.50,0.75\}$ nas instâncias \texttt{A-n32-k5}, \texttt{A-n80-k10} e \texttt{B-n78-k10}. Para cada combinação instância--$\alpha$, foram realizadas cinco execuções independentes, com sementes reproduzíveis. O limite foi de 50 iterações, 20 movimentos máximos de busca local e 180 segundos por execução.
+\textbf{Calibração.} O $\alpha$ do GRASP clássico foi escolhido comparando $\alpha\in\{0.25,0.50,0.75\}$ nas instâncias \texttt{A-n32-k5}, \texttt{A-n80-k10} e \texttt{B-n78-k10}, com cinco execuções independentes por combinação, 50 iterações, 20 movimentos de busca local e limite de 180 s por execução. O critério foi a média dos gaps nas três instâncias (Tabela~\ref{tab:calibracao}): 22.72\% para $0.25$, 23.22\% para $0.50$ e 23.31\% para $0.75$. Foi selecionado $\alpha=0.25$.
 
-A escolha considerou a média dos gaps obtidos nas três instâncias. Em caso de empate, seria utilizado o custo médio agregado.
-
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
-\caption{Resumo da calibração manual do parâmetro $\alpha$.}
+\caption{Calibração do parâmetro $\alpha$ (cinco execuções por linha).}
 \label{tab:calibracao}
-\small
+\footnotesize
 \begin{tabular}{lrrrrrr}
 \toprule
 Instância & Ótimo & $\alpha$ & Custo mín. & Custo méd. & Gap mín. & Gap méd. \\
@@ -26,4 +25,50 @@ B-n78-k10 & 1221 & 0.75 & 1644 & 1678.6 & 34.64\% & 37.48\% \\
 \end{tabular}
 \end{table}
 
-Os gaps médios agregados por $\alpha$ foram aproximadamente 22.72\% para 0.25, 23.22\% para 0.50 e 23.31\% para 0.75. Assim, $\alpha=0.25$ foi selecionado para o GRASP clássico nos experimentos finais.
+\textbf{Resultados finais.} As 53 instâncias foram resolvidas cinco vezes por método, com 100 iterações e 40 movimentos locais. A Tabela~\ref{tab:conjuntos} resume, por conjunto, as médias das métricas por instância.
+
+\begin{table}[H]
+\centering
+\caption{Médias por conjunto de instâncias (gap em \%, tempo médio por execução em s).}
+\label{tab:conjuntos}
+\footnotesize
+\begin{tabular}{llrrrr}
+\toprule
+Conjunto & Método & Instâncias & Gap mín. & Gap méd. & Tempo \\
+\midrule
+A & GRASP $\alpha=0.25$ & 27 & 6.58 & 8.71 & 15.32 \\
+A & GRASP Reativo & 27 & 7.11 & 8.77 & 19.10 \\
+B & GRASP $\alpha=0.25$ & 23 & 8.82 & 10.85 & 17.35 \\
+B & GRASP Reativo & 23 & 9.03 & 10.75 & 21.77 \\
+F & GRASP $\alpha=0.25$ & 3 & 10.77 & 15.52 & 239.45 \\
+F & GRASP Reativo & 3 & 13.75 & 16.45 & 288.23 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No total, o gap mínimo médio foi 7.79\% no clássico e 8.32\% no reativo; o gap médio foi 10.02\% e 10.06\%. O tempo médio por execução foi 28.89 s no clássico e 35.49 s no reativo (cerca de 22.86\% maior). O tempo total das 265 execuções de cada método foi 7655 s (2 h 8 min) no clássico e 9406 s (2 h 37 min) no reativo. Em custo mínimo, o clássico foi melhor em 27 instâncias, o reativo em 20 e houve empate em 6; em custo médio, 26 contra 26, com um empate. O ótimo conhecido foi atingido em pelo menos uma execução em 4 instâncias pelo clássico e em 2 pelo reativo. O conjunto F, com instâncias maiores (até 135 clientes), tem gaps maiores e tempos muito superiores, pela recomputação integral dos custos de rota.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\textwidth]{imagens/comparacao_final_grasp.png}
+\caption{Comparação dos custos mínimos do GRASP clássico calibrado e do GRASP Reativo.}
+\label{fig:comparacao}
+\end{figure}
+
+\textbf{Convergência e TTT.} Para as instâncias A-n33-k5 e A-n34-k5, cada método foi executado 50 vezes, com 100 soluções avaliadas por execução. As curvas de convergência (Figura~\ref{fig:convergencia}) mostram o melhor custo após cada solução construída e melhorada, na melhor execução; nas duas instâncias, ambos os métodos alcançaram o ótimo conhecido. O TTT (Figura~\ref{fig:ttt}) considera o tempo até o primeiro registro igual ao ótimo, e sua construção segue Aiex, Resende e Ribeiro \cite{aiex2007}. As taxas de sucesso foram 27/50 (clássico) e 28/50 (reativo) em A-n33-k5, e 12/50 e 11/50 em A-n34-k5. Entre as execuções bem-sucedidas, o tempo médio foi 2.210 s e 2.190 s em A-n33-k5, e 3.608 s e 2.725 s em A-n34-k5. A diferença entre os métodos é pequena e muda de sinal conforme a instância.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.60\textwidth]{imagens/convergencia_A-n33-k5.png}\\[1pt]
+\includegraphics[width=0.60\textwidth]{imagens/convergencia_A-n34-k5.png}
+\caption{Convergência em A-n33-k5 (acima) e A-n34-k5 (abaixo).}
+\label{fig:convergencia}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.50\textwidth]{imagens/ttt_A-n33-k5.png}\\[1pt]
+\includegraphics[width=0.50\textwidth]{imagens/ttt_A-n34-k5.png}
+\caption{TTT em A-n33-k5 (acima) e A-n34-k5 (abaixo).}
+\label{fig:ttt}
+\end{figure}

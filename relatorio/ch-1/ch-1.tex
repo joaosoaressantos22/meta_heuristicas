@@ -2,6 +2,9 @@
 
 O Problema de Roteamento de Veículos (Vehicle Routing Problem -- VRP) surgiu no contexto da programação de entregas e da organização de frotas \cite{dantzig1959}. No Problema de Roteamento de Veículos Capacitado (Capacitated Vehicle Routing Problem -- CVRP), existe um depósito, um conjunto de clientes com demandas conhecidas e uma frota de veículos com capacidade limitada. Cada cliente deve ser atendido exatamente uma vez, todas as rotas começam e terminam no depósito, e a carga de cada veículo não pode exceder sua capacidade. O objetivo é minimizar a distância total percorrida.
 
-O CVRP é um problema de otimização combinatória de difícil resolução, pois o número de sequências viáveis cresce rapidamente com a quantidade de clientes. Meta-heurísticas são utilizadas para obter soluções de boa qualidade em tempo limitado. O GRASP foi proposto para problemas difíceis e combina construção gulosa aleatorizada com busca local \cite{feo1989,resende2019}.
+O CVRP é um problema de otimização combinatória de difícil resolução, pois o número de sequências viáveis cresce rapidamente com a quantidade de clientes. Meta-heurísticas permitem obter soluções de boa qualidade em tempo limitado. O GRASP (Greedy Randomized Adaptive Search Procedure) combina construção gulosa aleatorizada com busca local \cite{feo1989,resende2019}.
 
-O estudo compara o GRASP clássico, com $\alpha$ fixo, ao GRASP Reativo, que adapta a distribuição de probabilidades dos valores de $\alpha$. São analisadas 53 instâncias dos conjuntos A, B e F disponíveis no projeto, incluindo custo, tempo, gap, convergência e Time-To-Target (TTT).
+Este trabalho compara o GRASP clássico, com $\alpha$ fixo, ao GRASP Reativo, que adapta a distribuição de probabilidades dos valores de $\alpha$ durante a execução. Foram usadas 53 instâncias dos conjuntos A (27), B (23) e F (3), da biblioteca CVRPLIB. Os conjuntos A e B são de Augerat; o nome indica a dimensão e a frota, como em \texttt{A-n32-k5} (32 nós e 5 veículos). Cada arquivo traz coordenadas bidimensionais, demandas, depósito, capacidade e, quando informado, o valor ótimo conhecido, usado para calcular o gap. As distâncias seguem \texttt{EUC\_2D}, arredondadas ao inteiro mais próximo:
+\begin{equation}
+d_{ij}=\left\lfloor\sqrt{(x_i-x_j)^2+(y_i-y_j)^2}+0.5\right\rfloor.
+\end{equation}

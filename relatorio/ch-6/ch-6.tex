@@ -1,7 +1,7 @@
-\section{Busca local}
+\section{Detalhes de implementação}
 
-A busca local utiliza a estratégia \textit{best-improvement}. Ela avalia 2-opt, realocação e troca entre rotas. Movimentos que excedem a capacidade são descartados.
+A implementação foi feita em Python 3.9.12, em um notebook Jupyter, com \texttt{pandas}, \texttt{matplotlib} e \texttt{tqdm} para tabelas, gráficos e barras de progresso. O código é sequencial (uma única linha de execução). As instâncias e as soluções são guardadas em listas e dicionários de Python: o arquivo \texttt{.vrp} é lido por seções, e a matriz de distâncias é um dicionário de dicionários. O custo de cada rota é recalculado por inteiro a cada movimento avaliado, sem atualização incremental; isso simplifica o código, mas encarece a busca local, o que explica os tempos de execução nas instâncias maiores. Os tempos são medidos com \texttt{time.perf\_counter}.
 
-Em cada iteração, avalia todas as vizinhanças, aplica o movimento com maior redução $\Delta C<0$ e repete o processo até não existir melhora ou atingir 20 movimentos nos experimentos. A variante \textit{first-improvement}, apesar de implementada, não participa dos experimentos.
+Os experimentos foram executados em um notebook Dell Inspiron i15-3583-FS1P, com processador Intel Core i5 de 8ª geração, 8 GB de memória RAM, SSD de 256 GB, tela de 15,6 polegadas e Windows 10.
 
-A implementação foi desenvolvida em Python 3.9.12. Os experimentos foram executados em um processador Intel Core i7-8565U, com oito CPUs disponíveis. Os dados das instâncias e as soluções são armazenados em listas e dicionários de Python.
+Cada execução usa uma semente própria (na calibração e nos experimentos finais), o que permite reproduzir os resultados. Parâmetros finais: 100 iterações e 40 movimentos de busca local; $\alpha=0.25$ no clássico; grade de $\alpha$ com passo $0.05$, bloco de 2 iterações e $\delta=5$ no reativo. O código, o notebook e as instâncias estão no GitHub\footnote{\url{https://github.com/joaosoaressantos22/meta_heuristicas.git}}, e os resultados completos, em uma pasta do Drive\footnote{\url{https://drive.google.com/drive/folders/1VtNmJa1JuUNSUU0BtCh_EowPccevDMAs?usp=sharing}}.

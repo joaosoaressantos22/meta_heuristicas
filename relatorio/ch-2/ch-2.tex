@@ -1,14 +1,23 @@
-\section{Instâncias}
+\section{Representação de uma solução}
 
-As instâncias utilizadas pertencem aos conjuntos A, B e F disponíveis no projeto. Os conjuntos A e B são da biblioteca Augerat; o nome indica dimensão e frota, como em \texttt{A-n32-k5}. Cada arquivo contém coordenadas bidimensionais, demandas, depósito, capacidade e, quando informado, o valor ótimo conhecido no comentário. O depósito é determinado pela seção \texttt{DEPOT\_SECTION}.
+Uma solução $S=(R_1,\ldots,R_k)$ é uma lista de rotas, em que cada posição $j$ da lista corresponde a um caminhão (veículo) e $R_j$ é a rota que ele percorre, uma lista ordenada de clientes, $R=(v_1,\ldots,v_m)$. O depósito (nó $0$) não é armazenado: ele é implícito no início e no fim, de modo que a rota percorrida é $0\rightarrow v_1\rightarrow\cdots\rightarrow v_m\rightarrow 0$. Rotas vazias são descartadas, e o número de rotas não pode exceder o número de veículos da instância, obtido do sufixo \texttt{-k} do nome do arquivo.
 
-A leitura extrai metadados e seções separadamente. A matriz de distâncias é calculada uma vez e utilizada nas construções, validações e movimentos da busca local.
+Uma solução é \emph{viável} quando atende todos os clientes exatamente uma vez, usa no máximo $k$ rotas e respeita a capacidade em cada rota. Essa verificação é independente do custo: uma solução de custo baixo pode ser inválida se omitir ou repetir um cliente, ou exceder a capacidade. Por isso toda solução é validada antes de ser aceita como melhor solução.
 
-Os arquivos são lidos por seções. Extraem-se nome, coordenadas, demandas, depósito, capacidade e número de veículos. O depósito é identificado em \texttt{DEPOT\_SECTION}; os demais nós são clientes. O nome do arquivo informa o número máximo de veículos. Quando presente no comentário, o valor ótimo conhecido é registrado para o cálculo do gap.
+\textbf{Exemplo.} Solução obtida pelo GRASP clássico ($\alpha=0.25$, 100 iterações, semente 42) na instância \texttt{A-n32-k5} (31 clientes, 5 veículos, capacidade 100; no arquivo, o depósito é o nó 1). Seu custo é 808, com gap de 3.06\% em relação ao ótimo conhecido (784):
+{\small
+\begin{align*}
+S=\big(&[25,28],\ [21,6,30,19,12,5,24,4,3,7],\ [15,29,9,10,23,16,11,26],\\
+&[31,17,2,13],\ [22,32,20,18,14,8,27]\big).
+\end{align*}}
+Cada posição da lista $S$ corresponde a um caminhão: o primeiro caminhão atende os clientes $[25,28]$, o segundo atende $[21,6,30,\ldots,7]$, e assim por diante, totalizando os 5 veículos da instância. Dentro de cada rota, a ordem dos clientes é a ordem de visita. As cargas dos caminhões são 44, 98, 98, 72 e 98, todas dentro da capacidade, e cada um dos 31 clientes aparece uma única vez. A primeira rota, por exemplo, percorre $\text{depósito}\rightarrow 25\rightarrow 28\rightarrow\text{depósito}$.
 
-As distâncias seguem \texttt{EUC\_2D}, com arredondamento ao inteiro mais próximo:
+O custo de uma rota é
 \begin{equation}
-d_{ij}=\left\lfloor\sqrt{(x_i-x_j)^2+(y_i-y_j)^2}+0.5\right\rfloor.
+C(R)=d_{0v_1}+\sum_{i=1}^{m-1}d_{v_iv_{i+1}}+d_{v_m0},
 \end{equation}
-
-A carga de cada rota e a identidade dos clientes são validadas antes que uma solução seja armazenada. Uma solução é viável quando atende todos os clientes uma única vez, não excede o número de veículos e respeita a capacidade de cada rota. Uma rota é representada por $0 \rightarrow v_1 \rightarrow \cdots \rightarrow v_m \rightarrow 0$, sendo $0$ o depósito.
+e a função objetivo, a ser minimizada, é $F(S)=\sum_{j=1}^{k}C(R_j)$. O gap em relação ao ótimo conhecido $F^*$ é
+\begin{equation}
+\text{gap}(S)=100\left(\frac{F(S)}{F^*}-1\right).
+\end{equation}
+A matriz de distâncias é calculada uma vez por instância e reutilizada na construção, na validação e nos movimentos da busca local.

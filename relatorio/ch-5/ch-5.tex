@@ -1,20 +1,7 @@
-\section{Algoritmo construtivo}
+\section{Mecanismos de intensificação e diversificação}
 
-A construção prioriza clientes com maiores demandas. Para o cliente escolhido, avaliam-se as posições viáveis nas rotas. O custo incremental de uma inserção é
-\[
-\Delta=C(R^{p,v})-C(R).
-\]
-Os candidatos formam a RCL definida por
-\begin{equation}
-\Delta \leq c_{min}+\alpha(c_{max}-c_{min}),
-\end{equation}
-e uma posição é sorteada nessa lista.
+\textbf{Diversificação.} (i) A aleatoriedade da RCL: quanto maior $\alpha$, mais variadas são as soluções construídas. (ii) O sorteio do cliente entre os três de maior demanda, que varia a ordem de atendimento mesmo com $\alpha$ pequeno. (iii) O caráter multi-start: cada iteração recomeça de uma construção nova, com sementes reproduzíveis. (iv) No GRASP Reativo, a grade de 21 valores de $\alpha$ mantém soluções mais gulosas e mais aleatórias em disputa.
 
-Assim, $\alpha=0$ admite apenas o melhor incremento, $\alpha=1$ aceita todos os candidatos viáveis e valores intermediários equilibram gulosidade e aleatoriedade. Os custos são recalculados após cada inserção. Quando não há candidato viável, uma busca limitada por backtracking distribui os clientes restantes.
+\textbf{Intensificação.} (i) A busca local \textit{best-improvement} conduz cada solução construída a um ótimo local da vizinhança, ou ao limite de movimentos. (ii) O $\alpha$ pequeno do GRASP clássico ($0.25$) gera soluções iniciais de boa qualidade, que a busca local refina. (iii) No GRASP Reativo, a probabilidade $p(\alpha)$ desloca a amostragem para os valores de $\alpha$ cujas soluções têm custo médio mais próximo do melhor custo encontrado; com $\delta=5$, essa preferência é forte.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.72\textwidth]{imagens/pseudo-codigo-construcao.png}
-\caption{Pseudocódigo da construção gulosa aleatorizada.}
-\label{fig:pseudoconstrucao}
-\end{figure}
+O equilíbrio entre os dois mecanismos é controlado por $\alpha$ e, no reativo, por $\delta$ e pelo tamanho do bloco. Não foram usados mecanismos de memória de longo prazo, como path-relinking ou conjunto de soluções elite.

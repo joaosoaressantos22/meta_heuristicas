@@ -14,6 +14,15 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage[alf]{abntex2cite}
 
+% Com XeTeX/Tectonic o pacote "times" não funciona e o negrito dos títulos
+% não era aplicado; carregamos uma fonte com negrito real.
+\usepackage{iftex}
+\ifXeTeX
+  \usepackage{fontspec}
+  \setmainfont{lmroman10}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+    ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\fi
+
 \setlength{\textfloatsep}{5pt plus 1pt minus 2pt}
 \setlength{\floatsep}{5pt plus 1pt minus 2pt}
 \setlength{\intextsep}{5pt plus 1pt minus 2pt}
@@ -22,6 +31,15 @@
 \setlist{nosep}
 
 \sloppy
+\raggedbottom % evita que o LaTeX estique o espaço vertical para alinhar o pé da página
+
+% Margens um pouco menores que as do template (3,5/2,5/3/3 cm)
+\geometry{a4paper,top=2.8cm,bottom=2.2cm,left=2.5cm,right=2.5cm}
+
+% Títulos de seção maiores (o template já os põe em negrito)
+\makeatletter
+\renewcommand{\XIIIPT}{\@setfontsize\xiiipt{16}{20}}
+\makeatother
 
 \title{Uma solução para o Problema de Roteamento de Veículos Capacitado utilizando GRASP e GRASP Reativo}
 
@@ -34,14 +52,6 @@ Vitória -- ES -- Brasil}
 
 \maketitle
 
-\begin{abstract}
-This article presents an experimental study of the Capacitated Vehicle Routing Problem (CVRP) using the Greedy Randomized Adaptive Search Procedure (GRASP) and its reactive variant. The solution combines randomized greedy construction, Restricted Candidate Lists (RCL), and best-improvement local search. Fifty-three instances from the A, B, and F sets were solved five times for both methods using 100 iterations and up to 40 local-search moves. Parameter calibration selected $\alpha=0.25$ from $0.25$, $0.50$, and $0.75$. The average mean gap was $10.02\%$ for classical GRASP and $10.06\%$ for Reactive GRASP; the reactive method was about $22.86\%$ slower. The results show no consistent dominance by either method.
-\end{abstract}
-
-\begin{resumo}
-Este artigo apresenta um estudo experimental do Problema de Roteamento de Veículos Capacitado (CVRP) com o Greedy Randomized Adaptive Search Procedure (GRASP) e sua versão reativa. A solução combina construção gulosa aleatorizada, Lista Restrita de Candidatos (RCL) e busca local do tipo melhor melhora. Foram resolvidas cinco vezes 53 instâncias dos conjuntos A, B e F, com 100 iterações e até 40 movimentos na busca local. Na calibração, $\alpha=0.25$ apresentou o menor gap médio dentre $0.25$, $0.50$ e $0.75$. O gap médio das médias foi $10.02\%$ no GRASP clássico e $10.06\%$ no reativo; este foi cerca de $22.86\%$ mais lento. Os resultados não indicam dominância consistente de um método.
-\end{resumo}
-
 \input{ch-1/ch-1.tex}
 \input{ch-2/ch-2.tex}
 \input{ch-3/ch-3.tex}
@@ -50,7 +60,6 @@ Este artigo apresenta um estudo experimental do Problema de Roteamento de Veícu
 \input{ch-6/ch-6.tex}
 \input{ch-7/ch-7.tex}
 \input{ch-8/ch-8.tex}
-\input{ch-9/ch-9.tex}
 
 \renewcommand{\refname}{Referências}
 \begingroup
