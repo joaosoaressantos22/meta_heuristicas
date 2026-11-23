@@ -1,26 +1,31 @@
-\begin{thebibliography}{}
+\providecommand{\abntreprintinfo}[1]{%
+ \citeonline{#1}}
+\setlength{\labelsep}{0pt}\begin{thebibliography}{}
+\providecommand{\abntrefinfo}[3]{}
+\providecommand{\abntbstabout}[1]{}
+\abntbstabout{v-1.9.7 }
 
-\bibitem[Aiex et~al. 2007]{aiex2007}
-Aiex, R.~M., Resende, M. G.~C., and Ribeiro, C.~C. (2007).
-\newblock Ttt plots: A perl program to create time-to-target plots.
-\newblock {\em Optimization Letters}, 1:355--366.
+\bibitem[Aiex, Resende e Ribeiro 2007]{aiex2007}
+\abntrefinfo{Aiex, Resende e Ribeiro}{AIEX; RESENDE; RIBEIRO}{2007}
+{AIEX, R.~M.; RESENDE, M. G.~C.; RIBEIRO, C.~C. {TTT} plots: A {Perl} program
+  to create time-to-target plots.
+\emph{Optimization Letters}, v.~1, p. 355--366, 2007.}
 
-\bibitem[Dantzig and Ramser 1959]{dantzig1959}
-Dantzig, G.~B. and Ramser, J.~H. (1959).
-\newblock The truck dispatching problem.
-\newblock {\em Management Science}, 6(1):80--91.
+\bibitem[Dantzig e Ramser 1959]{dantzig1959}
+\abntrefinfo{Dantzig e Ramser}{DANTZIG; RAMSER}{1959}
+{DANTZIG, G.~B.; RAMSER, J.~H. The truck dispatching problem.
+\emph{Management Science}, v.~6, n.~1, p. 80--91, 1959.}
 
-\bibitem[Feo and Resende 1989]{feo1989}
-Feo, T.~A. and Resende, M. G.~C. (1989).
-\newblock A probabilistic heuristic for a computationally difficult set
-  covering problem.
-\newblock {\em Operations Research Letters}, 8:67--71.
+\bibitem[Feo e Resende 1989]{feo1989}
+\abntrefinfo{Feo e Resende}{FEO; RESENDE}{1989}
+{FEO, T.~A.; RESENDE, M. G.~C. A probabilistic heuristic for a computationally
+  difficult set covering problem.
+\emph{Operations Research Letters}, v.~8, p. 67--71, 1989.}
 
-\bibitem[Resende and Ribeiro 2019]{resende2019}
-Resende, M. G.~C. and Ribeiro, C.~C. (2019).
-\newblock Greedy randomized adaptive search procedures: Advances and
-  extensions.
-\newblock In {\em Handbook of Metaheuristics}, pages 169--220. Springer, 3
-  edition.
+\bibitem[Resende e Ribeiro 2019]{resende2019}
+\abntrefinfo{Resende e Ribeiro}{RESENDE; RIBEIRO}{2019}
+{RESENDE, M. G.~C.; RIBEIRO, C.~C. Greedy randomized adaptive search
+  procedures: Advances and extensions. In:  \emph{Handbook of Metaheuristics}.
+  3. ed. [S.l.]: Springer, 2019. p. 169--220.}
 
 \end{thebibliography}

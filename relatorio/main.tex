@@ -12,6 +12,7 @@
 \usepackage{tikz}
 \usepackage{microtype}
 \usepackage[hidelinks]{hyperref}
+\usepackage[alf]{abntex2cite}
 
 \setlength{\textfloatsep}{5pt plus 1pt minus 2pt}
 \setlength{\floatsep}{5pt plus 1pt minus 2pt}
@@ -34,11 +35,11 @@ Vitória -- ES -- Brasil}
 \maketitle
 
 \begin{abstract}
-This article presents an experimental study of the Capacitated Vehicle Routing Problem (CVRP) using the Greedy Randomized Adaptive Search Procedure (GRASP) and its reactive variant. The solution combines randomized greedy construction, Restricted Candidate Lists (RCL), and best-improvement local search. Instances A and B from the CVRPLIB/Augerat benchmark set were solved five times for both methods. Parameter calibration selected $\alpha=0.25$ from $0.25$, $0.50$, and $0.75$. Across 50 instance-method experiments, Reactive GRASP obtained an average gap of $17.24\%$, against $17.63\%$ for classical GRASP. The reactive approach was also slower on average. These results indicate that Reactive GRASP can improve average quality, but does not consistently dominate the calibrated classical method.
+This article presents an experimental study of the Capacitated Vehicle Routing Problem (CVRP) using the Greedy Randomized Adaptive Search Procedure (GRASP) and its reactive variant. The solution combines randomized greedy construction, Restricted Candidate Lists (RCL), and best-improvement local search. Fifty-three instances from the A, B, and F sets were solved five times for both methods using 100 iterations and up to 40 local-search moves. Parameter calibration selected $\alpha=0.25$ from $0.25$, $0.50$, and $0.75$. The average mean gap was $10.02\%$ for classical GRASP and $10.06\%$ for Reactive GRASP; the reactive method was about $22.86\%$ slower. The results show no consistent dominance by either method.
 \end{abstract}
 
 \begin{resumo}
-Este artigo apresenta um estudo experimental do Problema de Roteamento de Veículos Capacitado (CVRP) com o Greedy Randomized Adaptive Search Procedure (GRASP) e sua versão reativa. A solução combina construção gulosa aleatorizada, Lista Restrita de Candidatos (RCL) e busca local do tipo melhor melhora. Foram resolvidas cinco vezes todas as instâncias dos conjuntos A e B da biblioteca Augerat. Na calibração, $\alpha=0.25$ apresentou o menor gap médio dentre $0.25$, $0.50$ e $0.75$. Considerando as 50 combinações instância--método, o GRASP Reativo obteve gap médio de $17.24\%$, contra $17.63\%$ do GRASP clássico. Os resultados mostram melhoria média no reativo, mas não dominância consistente sobre o GRASP clássico calibrado.
+Este artigo apresenta um estudo experimental do Problema de Roteamento de Veículos Capacitado (CVRP) com o Greedy Randomized Adaptive Search Procedure (GRASP) e sua versão reativa. A solução combina construção gulosa aleatorizada, Lista Restrita de Candidatos (RCL) e busca local do tipo melhor melhora. Foram resolvidas cinco vezes 53 instâncias dos conjuntos A, B e F, com 100 iterações e até 40 movimentos na busca local. Na calibração, $\alpha=0.25$ apresentou o menor gap médio dentre $0.25$, $0.50$ e $0.75$. O gap médio das médias foi $10.02\%$ no GRASP clássico e $10.06\%$ no reativo; este foi cerca de $22.86\%$ mais lento. Os resultados não indicam dominância consistente de um método.
 \end{resumo}
 
 \input{ch-1/ch-1.tex}
@@ -54,7 +55,6 @@ Este artigo apresenta um estudo experimental do Problema de Roteamento de Veícu
 \renewcommand{\refname}{Referências}
 \begingroup
 \scriptsize
-\bibliographystyle{sbc}
 \bibliography{references}
 \normalsize
 \endgroup

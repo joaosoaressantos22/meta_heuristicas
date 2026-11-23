@@ -9,12 +9,13 @@ O GRASP segue um ciclo multi-start ilustrado pela Figura~\ref{fig:pseudogeral}. 
 \label{fig:pseudogeral}
 \end{figure}
 
-A construção produz diversidade e a busca local intensifica a solução. No GRASP clássico, $\alpha$ é constante. No reativo, blocos de iterações acumulam médias de custo por $\alpha$ e atualizam suas probabilidades. A implementação usa
+A construção produz diversidade e a busca local intensifica a solução. No GRASP clássico, $\alpha$ permanece constante. No GRASP Reativo, as probabilidades de escolha dos valores de $\alpha$ são atualizadas ao fim de cada bloco, com base nos custos observados. A probabilidade de escolher um valor $\alpha$ é calculada por
 \begin{equation}
-w(\alpha)=-\delta\log\left(\max\left(\frac{\bar F(\alpha)}{F^\star_{exec}},1\right)\right),
+p(\alpha)=
+\frac{\left(F_{\mathrm{melhor}}/\bar F(\alpha)\right)^\delta}
+{\displaystyle\sum_{\beta\in\mathcal{A}}
+\left(F_{\mathrm{melhor}}/\bar F(\beta)\right)^\delta},
 \end{equation}
-com $\delta=5$, seguida de normalização softmax.
+em que $\bar F(\alpha)$ é o custo médio das soluções obtidas com $\alpha$, $F_{\mathrm{melhor}}$ é o menor custo encontrado até então e $\mathcal{A}$ é o conjunto de valores de $\alpha$. A normalização faz com que as probabilidades somem 1. O parâmetro $\delta=5$ controla a preferência por valores de $\alpha$ com melhor desempenho: quanto maior $\delta$, maior essa preferência. O ótimo conhecido da instância não é usado nesse cálculo.
 
-Os candidatos não são associados a um histórico global do problema. O método atualiza as médias dos custos observados em cada bloco e transforma essa informação em probabilidades. Assim, valores associados a bons resultados recebem maiores probabilidades, sem usar o ótimo conhecido.
-
-A calibração seleciona um único $\alpha$ antes dos experimentos finais usando instâncias representativas. O GRASP Reativo não depende desse parâmetro fixo: mantém uma distribuição sobre uma grade de valores e altera essa distribuição conforme os custos observados.
+A calibração seleciona um único $\alpha$ antes dos experimentos finais usando instâncias representativas. O GRASP Reativo, por sua vez, atualiza as probabilidades de uma grade de valores durante a execução.

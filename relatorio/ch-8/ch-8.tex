@@ -1,10 +1,10 @@
 \section{Experimentos e resultados}
 
-Os experimentos finais utilizam as instâncias dos conjuntos A, B e F disponíveis no diretório \texttt{instancias}. O GRASP clássico foi configurado com $\alpha=0.25$, 50 iterações e 20 movimentos locais. O GRASP Reativo utilizou uma grade de $\alpha$ com passo $0.05$, bloco de atualização igual a 2 e $\delta=5$.
+Os experimentos finais utilizam 53 instâncias dos conjuntos A, B e F disponíveis no diretório \texttt{instancias}. O GRASP clássico foi configurado com $\alpha=0.25$, 100 iterações e até 40 movimentos na busca local. O GRASP Reativo utilizou uma grade de $\alpha$ com passo $0.05$, bloco de atualização igual a 2, $\delta=5$, 100 iterações e até 40 movimentos locais.
 
-Os dois métodos foram executados cinco vezes em cada instância. Foram registrados custo mínimo, custo médio, tempo mínimo, tempo médio e gaps. A agregação apresentou gap mínimo médio de 14.79\% no clássico e 14.29\% no reativo; os gaps médios foram 17.63\% e 17.24\%. O tempo médio foi 4.23 s no clássico e 6.05 s no reativo.
+Os dois métodos foram executados cinco vezes em cada instância. Foram registrados custo mínimo, custo médio, tempo mínimo, tempo médio e gaps. Considerando a média das métricas por instância, o gap mínimo médio foi 7.79\% no clássico e 8.32\% no reativo; o gap médio foi 10.02\% e 10.06\%, respectivamente. O tempo médio por execução, também calculado sobre as instâncias, foi 28.89 s no clássico e 35.49 s no reativo. Assim, o tempo do método reativo foi cerca de 22.86\% maior.
 
-Considerando as cinco execuções de cada uma das 50 instâncias, o tempo agregado aproximado foi de 1057.86 s (17 min 38 s) para o GRASP clássico e 1513.44 s (25 min 13 s) para o GRASP Reativo. Os resultados completos das cinco execuções de ambos os métodos estão disponíveis no \href{https://drive.google.com/drive/folders/1VtNmJa1JuUNSUU0BtCh_EowPccevDMAs?usp=sharing}{Drive\textsuperscript{2}}. O código, os experimentos e o notebook Jupyter estão disponíveis no \href{https://github.com/joaosoaressantos22/meta_heuristicas.git}{GitHub\textsuperscript{3}}.
+Considerando cinco execuções em cada uma das 53 instâncias, o tempo total estimado foi 7655.27 s (aproximadamente 2 h 8 min) para o GRASP clássico e 9405.51 s (aproximadamente 2 h 37 min) para o GRASP Reativo. Os resultados completos estão disponíveis no \href{https://drive.google.com/drive/folders/1VtNmJa1JuUNSUU0BtCh_EowPccevDMAs?usp=sharing}{Drive\textsuperscript{2}}. O código, os experimentos e o notebook Jupyter estão disponíveis no \href{https://github.com/joaosoaressantos22/meta_heuristicas.git}{GitHub\textsuperscript{3}}.
 
 \begin{table}[htbp]
 \centering
@@ -15,15 +15,15 @@ Considerando as cinco execuções de cada uma das 50 instâncias, o tempo agrega
 \toprule
 Instância & Método & Ótimo & Mínimo & Médio & Gap mín. & Gap méd. \\
 \midrule
-A-n33-k5 & GRASP $\alpha=0.25$ & 661 & 670 & 687.2 & 1.36\% & 3.96\% \\
-A-n33-k5 & Reactive GRASP & 661 & 669 & 677.6 & 1.21\% & 2.51\% \\
-B-n31-k5 & GRASP $\alpha=0.25$ & 672 & 675 & 680.8 & 0.45\% & 1.31\% \\
-B-n31-k5 & Reactive GRASP & 672 & 677 & 679.0 & 0.74\% & 1.04\% \\
+A-n33-k5 & GRASP $\alpha=0.25$ & 661 & 661 & 667.8 & 0.00\% & 1.03\% \\
+A-n33-k5 & Reactive GRASP & 661 & 661 & 663.2 & 0.00\% & 0.33\% \\
+A-n34-k5 & GRASP $\alpha=0.25$ & 778 & 778 & 787.2 & 0.00\% & 1.18\% \\
+A-n34-k5 & Reactive GRASP & 778 & 778 & 783.0 & 0.00\% & 0.64\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Em A-n33-k5, o reativo obteve melhor custo mínimo e médio. Em B-n31-k5, o clássico obteve melhor custo mínimo, mas o reativo obteve melhor custo médio.
+Nas duas instâncias, ambos os métodos alcançaram o ótimo em pelo menos uma das cinco execuções finais; o reativo apresentou menor custo médio.
 
 \begin{figure}[htbp]
 \centering
@@ -36,32 +36,35 @@ Os gráficos de convergência mostram o melhor custo após cada solução constr
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.98\textwidth]{imagens/convergencia_A-n33-k5.png}
-\caption{Convergência em A-n33-k5.}
-\label{fig:convergenciaA}
+\begin{minipage}{0.495\textwidth}
+	\centering
+	\includegraphics[width=\linewidth]{imagens/convergencia_A-n33-k5.png}
+\end{minipage}\hfill
+\begin{minipage}{0.495\textwidth}
+	\centering
+	\includegraphics[width=\linewidth]{imagens/convergencia_A-n34-k5.png}
+\end{minipage}
+\caption{Convergência nas instâncias A-n33-k5 (esquerda) e A-n34-k5 (direita).}
+\label{fig:convergencia}
+\end{figure}
+
+Os gráficos de convergência mostram a melhor execução entre 50 repetições, com 100 soluções avaliadas por método. Em A-n33-k5 e A-n34-k5, ambos os métodos alcançaram o ótimo conhecido na melhor execução. No conjunto das 50 repetições, A-n33-k5 teve 27 sucessos do clássico e 28 do reativo; A-n34-k5 teve 12 e 11, respectivamente.
+
+\begin{figure}[htbp]
+\centering
+	\centering
+	\includegraphics[width=0.90\textwidth]{imagens/ttt_A-n33-k5.png}
+\caption{TTT na instância A-n33-k5}
+\label{fig:ttt}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.98\textwidth]{imagens/convergencia_B-n31-k5.png}
-\caption{Convergência em B-n31-k5.}
-\label{fig:convergenciaB}
+	\centering
+	\includegraphics[width=0.90\textwidth]{imagens/ttt_A-n34-k5.png}
+\caption{TTT na instância A-n34-k5}
+\label{fig:ttt}
 \end{figure}
 
-Nas duas instâncias, o custo decresce rapidamente nas primeiras avaliações. Em A-n33-k5, o clássico atingiu o ótimo em duas das 50 execuções e o reativo em uma. Em B-n31-k5, o clássico encontrou o ótimo uma vez e o reativo nenhuma vez.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.98\textwidth]{imagens/ttt_A-n33-k5.png}
-\caption{TTT em A-n33-k5.}
-\label{fig:tttA}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.98\textwidth]{imagens/ttt_B-n31-k5.png}
-\caption{TTT em B-n31-k5.}
-\label{fig:tttB}
-\end{figure}
-
-Em A-n33-k5, o tempo médio até o alvo foi cerca de 0.695 s no clássico e 0.280 s no reativo. Em B-n31-k5, somente o clássico encontrou o alvo, após cerca de 0.297 s. Como cada instância foi executada cinco vezes no experimento agregado, o mínimo representa o melhor resultado e a média representa a estabilidade observada.
+No TTT, cada método foi executado 50 vezes por instância, com 100 iterações e até 40 movimentos locais. Entre as execuções que atingiram o alvo, o tempo médio foi 2.210 s no clássico e 2.190 s no reativo em A-n33-k5; em A-n34-k5, foi 3.608 s e 2.725 s, respectivamente. As taxas de sucesso foram 27/50 contra 28/50 em A-n33-k5 e 12/50 contra 11/50 em A-n34-k5. Portanto, o reativo teve uma vantagem pequena em A-n33-k5, enquanto o clássico teve uma taxa de sucesso ligeiramente maior em A-n34-k5.
